@@ -1,0 +1,26 @@
+---
+title: "Summarys"
+author: "Jennifer Schlindwein"
+date: "20 12 2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(ggplot2)
+library(tidyr)
+```
+
+```{r}
+
+for (filename in list.files('data')){
+  print('----------------------------------------------------------')
+  print(filename)
+  dt <- fread(paste('data/',filename,sep=''))
+  print(summary(dt))
+}
+```
+
