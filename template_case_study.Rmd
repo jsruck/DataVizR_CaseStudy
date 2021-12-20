@@ -1,0 +1,81 @@
+---
+title: "Data Analysis and Visualization in R (IN2339)"
+subtitle: "Case Study"
+author: "[NAMES OF GROUP MEMBERS HERE]"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+```{r, echo=FALSE}
+## Load all the needed libraries. No need to include this in your compiled pdf document so we set echo=FALSE
+library(data.table)
+library(ggplot2)
+library(tidyr)
+
+```
+
+## Motivation
+
+*[YOUR MOTIVATION AND SHORT INTRO HERE]* 
+
+In 2017, there were more than 230 thousand registered vehicles in the city of Barcelona. The goal of this analysis is to have a better understanding of the accidents occurred during 2017. More precisely, we aim to ...
+
+## Data Preparation
+
+*[YOUR DATA PREPARATION STEPS HERE. Do not display unneccessary code chunks in the pdf file. Briefly explain which steps were needed for your analysis and which datasets (in tidy format) you consider.]*
+
+In this section, we perform the needed data preparation steps needed for the analysis. Unnecessary chunk codes are ommited in the compiled pdf-file. 
+
+```{r, echo=FALSE, results='hide'}
+## This chunk of code and output do not need to be included in the pdf document so we set echo=FALSE and results='hide'
+
+## Load the file(s)
+dt <- fread('data/accidents_2017.csv')
+
+## Observe the first and last rows and str of the dataset(s)
+head(dt)
+str(dt)
+
+```
+```{r, echo=FALSE}
+# For later visualization
+# Rename the column `Part of the day` into `Time of the day`
+# Convert `Time of the day` to a factor and set the order of the levels 
+setnames(dt, c('Part of the day'), c('Time of the day'))
+dt[, `Time of the day` := factor(`Time of the day`, levels=c('Morning','Afternoon', 'Night'))]
+
+
+```
+
+
+
+## Data Analysis
+
+*[YOUR DATA EXPLORATION INCLUDING AND LEAST 1 DESCRIPTIVE PLOT WITH MEANINGFUL DESCRIPTIONS/TITLES]*
+
+*[YOUR DATA ANALYSIS INCLUDING at least 1 hypotheses/claim and supported by a demonstrative plot AND at least  1 statistically supported claim and its visualization AND an example where controlling for cofounding factors was necessary to support a claim or invalidate the hypothesis OR implement one prediction task and show its performance HERE]*
+
+
+1\. In 2017 more accidents occurred during the afternoon
+
+
+```{r, echo=FALSE}
+
+ggplot(dt, aes(`Time of the day`)) + geom_bar() +
+  labs(y='Number of accidents')
+
+```
+The visualization shows that...
+
+
+
+## Conclusion 
+
+*[YOUR CONCLUSION HERE]*
+
+With the performed analysis we conclude that...
+
