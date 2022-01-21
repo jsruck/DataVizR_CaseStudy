@@ -133,7 +133,7 @@ airquality_agg$District_Name <- as.factor(airquality_agg$District_Name)
 
 plt <- ggplot(data = airquality_agg, aes(x=Month, y=Value, color=District_Name, group=District_Name)) 
 plt <- plt + geom_line(data = subset(airquality_agg, Year > 2018)) + facet_wrap(~Year) + geom_point(data = subset(airquality_agg, Year == 2018))
-plt <- plt + labs(x = "Month", y = "Average monthly pollutant concentration [µg/m^3]",
+plt <- plt + labs(x = "Month", y = "Average monthly NO2 concentration [µg/m^3]",
         title= "Monthly averages for NO2 concentration values between 2018 and 2021")
 plt <- plt + scale_fill_discrete(name = "District Name")
 plt
@@ -176,7 +176,7 @@ airquality_November_dt[, average_air_value:= air_value/count]
 ```{r fig2, fig.height = 6, fig.width = 10,}
 plt <- ggplot(airquality_November_dt, aes(Year, average_air_value, fill = Gas))
 plt <- plt + geom_bar(position = "dodge", stat= 'identity') + facet_wrap(~`District Name`)
-plt <- plt + labs(x = "November of the year", y = "Average pollutant concentration",
+plt <- plt + labs(x = "November of the year", y = "Average NO2 concentration [µg/m^3]",
         title= "Average NO2 concentration decreased in each district from November 2018 - 2021")
 plt
 ```
@@ -204,7 +204,7 @@ airquality$Day <- as.factor(airquality$Day)
 ```
 
 ```{r fig3, fig.height = 6, fig.width = 10,}
-airquality_2021 <- airquality[Year==2021,]
+  airquality_2021 <- airquality[Year==2021,]
 airquality_2018 <- airquality[Year==2018,]
 airquality_stat <- merge(airquality_2021,airquality_2018,by=c('Station','Hour','Day'))
 
@@ -215,7 +215,7 @@ test <- airquality[-idx,]
 cor.test(airquality_stat[Year.y==2018,Value.y],airquality_stat[Year.x==2021,Value.x])
 plt <- ggplot(airquality_stat,)+geom_point(aes(x=Value.x,y=Value.y))
 plt <- plt +labs(title="There is no linear relationship between the NO2 concentration 
-                 in 2018 and 2021", x ="NO2 Value in 2018", y = "NO2 Value in 2021")
+                 in 2018 and 2021", x ="NO2 Value [µg/m^3] in 2018", y = "NO2 Value [µg/m^3] in 2021")
 plt <- plt +coord_fixed()
 plt
 ```
