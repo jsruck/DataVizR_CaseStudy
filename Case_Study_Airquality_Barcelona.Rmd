@@ -3,6 +3,9 @@ title: "Data Analysis and Visualization in R (IN2339)"
 subtitle: "Case Study: There is Something in the Wind - Has Barcelona's Air Quality Changed Over the Past Four Years?"
 author: "Jennifer Schlindwein, Philippe Thome, Jan-Steffen Ruck, Anastasiia Okonnikova"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+header-includes:
+  - \usepackage{titlesec}
+  - \titlespacing*{\section}{0pt}{5pt}{0pt}
 output:
   
   pdf_document: default
@@ -13,6 +16,7 @@ output:
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+
 library(ggplot2)
 library(data.table)
 library(magrittr)
@@ -22,15 +26,13 @@ library(patchwork)
 library(Metrics)
 ```
 
-\maketitle
 \section{Introduction}
-\maketitle
+
 
 Greener - healthier - more sustainable: modern cities compete along various dimensions to attract and retain both inhabitants and organizations. A central factor to providing a livable environment within densely populated metropolitan areas is air quality. Although invisible to the human eye, traces of various pollutants can impair both public and individual health. To keep track of their current level and its development, the city of Barcelona installed a set of measure stations across most of its districts. Three commonly measured pollutants are NO2, O3 and PM10. With Barcelona's endeavors to revolutionize their intra-city mobility network, NO2, mostly emitted by traffic, becomes of particular interest. We therefore studied the development of the NO2 concentration within several districts over the time span 2018 - 2021.
 
-\maketitle
+
 \section{Dataset and Preparation}
-\maketitle
 
 In addition to the initially provided data set that contains pollution data for November 2018, we found a similar continuation of measurements that span from 2019 - 2021. Those measurements (aka "external data") were published by the Direcció General de Qualitat Ambiental i Canvi Climàtic de la Generalitat de Catalunya as part of Barcelona's Open Data Movement and are managed by the Department of Statistics and Data Dissemination of the Municipal Data Office. It can be accesses with the following link: <https://opendata-ajuntament.barcelona.cat/data/en/dataset/qualitat-aire-detall-bcn>. We added text files detailing the sources as well as English translations for feature names/descriptions to the external dataset.   
 
@@ -148,9 +150,8 @@ One notable feature is that NO2 concentration is not equally distributed across 
 
 The plot further suggests seasonal fluctuations in the form of higher NO2 concentration values during winter months. As our individual datasets for each year do not cover the entire year, an aggregation of concentration values on a yearly basis might introduce seasonal distortions (e.g. 2018 averages would fully consist of November values, while 2019 ones would further include spring and summer months). Because our most limited dataset, 2018, covered the month of November, which is further present in all subsequent years, we narrowed our investigation down to comparing the NO2 concentration aggregated by month of each year's November. 
 
-\maketitle
+
 \section{Coming up With an Initial Hypothesis}
-\maketitle
 
 The city of Barcelona launched and expanded a number of environmental initiatives during the observed time span (e.g. the 'Superilles', essentially banning vehicle traffic from entering certain intersections and streets, as well as measures related to fulfilling the UN's Agenda 2030 targets). Thus, we expected that over time, air quality had been enhanced - or respectively, in terms of available data, NO2 concentration had been decreased.   
 More precisely, our initial hypothesis was that there is a linear relationship between time and the mean NO2 concentration per month. For the purpose of testing this hypothesis, we defined H0 as the opposite: "There is no relationship between time and the mean NO2 concentration."   
@@ -184,9 +185,9 @@ plt
 This visualization shows the average air values in the city of Barcelona related to NO2, 03 & PM10 in November of the years 2018 - 2021.
 For NO2, one can observe a decreased value in November 2021 compared to November 2018.   
 
-\maketitle
+
 \section{Teststatistic}
-\maketitle
+
 In the following, we investigated whether this relationship was significant.
 
 ```{r, include=FALSE}
@@ -200,11 +201,7 @@ airquality$Hour <- as.factor(airquality$Hour)
 airquality$Year <- as.factor(airquality$Year)
 airquality$Station <- as.factor(airquality$Station)
 airquality$Day <- as.factor(airquality$Day)
-
-```
-
-```{r fig3, fig.height = 6, fig.width = 10,}
-  airquality_2021 <- airquality[Year==2021,]
+airquality_2021 <- airquality[Year==2021,]
 airquality_2018 <- airquality[Year==2018,]
 airquality_stat <- merge(airquality_2021,airquality_2018,by=c('Station','Hour','Day'))
 
@@ -212,6 +209,9 @@ idx <- sample(seq(nrow(airquality)),size=as.integer(0.8*nrow(airquality)),replac
 train <- airquality[idx,]
 test <- airquality[-idx,]
 
+```
+
+```{r fig3, fig.height = 6, fig.width = 10,}
 cor.test(airquality_stat[Year.y==2018,Value.y],airquality_stat[Year.x==2021,Value.x])
 plt <- ggplot(airquality_stat,)+geom_point(aes(x=Value.x,y=Value.y))
 plt <- plt +labs(title="There is no linear relationship between the NO2 concentration 
@@ -220,14 +220,19 @@ plt <- plt +coord_fixed()
 plt
 ```
 
+\section{Prediction}
+```{r}
+model.lm <- lm(Value~Station+Year,data=train)
+
+summary(model.lm)
+print(c(mse(predict(model.lm,test),test$Value),mse(predict(model.lm,train),train$Value)))
+```
+
 Since the p- value of the model is very small, there is at least some relationship between the dependent and independent variables explained. Since at least one factor of each variable is highly significant the chosen variables can stay in the model. The model also passed a validation test, since the MSE on a randomly sampled test set is roughly the same as the MSE of the train set. We therefore reject H0 and accept that there seems to be a time-related trend in the pollutant concentration in the observed districts for the time span of 2018 - 2021:
 The estimates for each factor of the year variable indicates, that the November NO2 concentration is decreasing as the years progress.
 
 
-\maketitle
 \section{Conclusion}
-\maketitle
-
 Our case study suggests an optimistic outlook for Barcelona's population: There seems to be a reduction in the NO2 concentration in the month of November over the past four years. This relationship is also found to be valid across districts.  
 
 Further investigation might now isolate and identify effects of the above-mentioned environmental initiatives or study how of external shocks such as corona-related measures impacted the city's air quality.
